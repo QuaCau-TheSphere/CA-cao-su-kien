@@ -1,6 +1,9 @@
 # Change your calendar ID here
 calendarID = 'f784c4b938bab23382fb2347cdf787f5ae454f55895209a45ead16888e3fde23@group.calendar.google.com'
 
+# ┌───────────────┐
+# │ Authorization │
+# └───────────────┘
 import os.path
 
 from google.auth.transport.requests import Request
@@ -31,27 +34,13 @@ if not creds or not creds.valid:
     with open("token.json", "w") as token:
         token.write(creds.to_json())
 
-
+# ┌──────────┐
+# │ Scraping │
+# └──────────┘
 from bs4 import BeautifulSoup
 import json
 import requests
 from datetime import datetime, timedelta
-
-print('Getting Meetup content...')
-# meetup_scrape_result = requests.get('https://www.meetup.com/find/?source=EVENTS&eventType=inPerson&sortField=DATETIME&location=vn--Ho%20Chi%20Minh%20City')
-# # meetup_scrape_result = requests.get('https://www.example.com')
-
-# meetup_file = open('meetup.html', 'wb')
-# meetup_file.write(meetup_scrape_result.content)
-# meetup_file.close()
-
-html = open("meetup.html", "r") 
-soup = BeautifulSoup(html, 'html5lib')
-
-print('Processing Meetup content...')
-meetup_events = json.loads(soup.find_all('script', attrs={"type": "application/ld+json"})[1].text) 
-
-now = datetime.utcnow().isoformat() + "Z"  # 'Z' indicates UTC time
 
 class Event:
     def __init__(self, summary, description, location, startDate, endDate):
@@ -62,25 +51,40 @@ class Event:
         self.start = {'dateTime': startDate} 
         self.end   = {'dateTime': endDate} 
 
-try:
-    service = build("calendar", "v3", credentials=creds)
-    for event_dict in meetup_events:
-        summary = event_dict.get('name')
-        description = event_dict.get('description')
-        location = event_dict.get('location').get('name')
+# Scraping Meetup 
+# ───────────────
+print('Getting Meetup events...')
+# meetup_scrape_result = requests.get('https://www.meetup.com/find/?source=EVENTS&eventType=inPerson&sortField=DATETIME&location=vn--Ho%20Chi%20Minh%20City')
 
-        start_date = datetime.fromisoformat(event_dict.get('startDate'))
-        try:
-            end_date = datetime.fromisoformat(event_dict.get('endDate'))
-        except:
-            end_date = start_date + timedelta(hours=3)
-        
-        event_body = Event(summary, description, location, start_date.strftime("%Y-%m-%dT%H:%M:%SZ"), end_date.strftime("%Y-%m-%dT%H:%M:%SZ"))
-        print(event_body.summary, event_body.start['dateTime'], event_body.end['dateTime'])
-        
-        event_json = json.loads(json.dumps(event_body, default=vars))
-        event = service.events().insert(calendarId=calendarID, body=event_json).execute()
-        print('Event created: %s' % (event.get('htmlLink'))) 
+# meetup_file = open('meetup.html', 'wb')
+# meetup_file.write(meetup_scrape_result.content)
+# meetup_file.close()
 
-except HttpError as error:
-    print(f"An error occurred: {error}")
+html = open("meetup.html", "r") 
+soup = BeautifulSoup(html, 'html5lib')
+
+print('Processing Meetup events...')
+meetup_events = json.loads(soup.find_all('script', attrs={"type": "application/ld+json"})[1].text) 
+
+service = build("calendar", "v3", credentials=creds)
+for event_dict in meetup_events:
+    summary = event_dict.get('name')
+    description = event_dict.get('description')
+    location = event_dict.get('location').get('name')
+
+    start_date = datetime.fromisoformat(event_dict.get('startDate'))
+    try:
+        end_date = datetime.fromisoformat(event_dict.get('endDate'))
+    except:
+        end_date = start_date + timedelta(hours=3)
+    
+    event_body = Event(summary, description, location, start_date.strftime("%Y-%m-%dT%H:%M:%SZ"), end_date.strftime("%Y-%m-%dT%H:%M:%SZ"))
+    print(event_body.summary, event_body.start['dateTime'], event_body.end['dateTime'])
+    
+    event_json = json.loads(json.dumps(event_body, default=vars))
+    event = service.events().insert(calendarId=calendarID, body=event_json).execute()
+    print('Event created: %s\n' % (event.get('htmlLink'))) 
+
+# try:
+# except HttpError as error:
+#     print(f"An error occurred: {error}")
