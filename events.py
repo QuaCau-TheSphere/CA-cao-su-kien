@@ -37,51 +37,21 @@ if not creds or not creds.valid:
 # ┌──────────┐
 # │ Scraping │
 # └──────────┘
-from bs4 import BeautifulSoup
-import json
-import requests
-from datetime import datetime, timedelta
+from modules.meetup import scrape_meetup
+from modules.ticketbox import scrape_ticketbox
+events = scrape_meetup() + scrape_ticketbox()
+# events = [ {'summary': 'test', 'description': '', 'source': {'title': 'source title', 'url': 'https://developers.google.com/calendar/api/v3/reference/events/insert'}, 'start': {'dateTime': '2023-12-21T10:00:00Z'}, 'end': {'dateTime': '2023-12-21T12:00:00Z'}}] 
 
-class Event:
-    def __init__(self, summary, description, location, startDate, endDate):
-        self.summary = summary
-        self.description = description
-        self.location = location
-
-        self.start = {'dateTime': startDate} 
-        self.end   = {'dateTime': endDate} 
-
-# Scraping Meetup 
-# ───────────────
-print('Getting Meetup events...')
-# meetup_scrape_result = requests.get('https://www.meetup.com/find/?source=EVENTS&eventType=inPerson&sortField=DATETIME&location=vn--Ho%20Chi%20Minh%20City')
-
-# meetup_file = open('meetup.html', 'wb')
-# meetup_file.write(meetup_scrape_result.content)
-# meetup_file.close()
-
-html = open("meetup.html", "r") 
-soup = BeautifulSoup(html, 'html5lib')
-
-print('Processing Meetup events...')
-meetup_events = json.loads(soup.find_all('script', attrs={"type": "application/ld+json"})[1].text) 
-
+# ┌──────────────────────────────┐
+# │ Uploading to Google Calendar │
+# └──────────────────────────────┘
 service = build("calendar", "v3", credentials=creds)
-for event_dict in meetup_events:
-    summary = event_dict.get('name')
-    description = event_dict.get('description')
-    location = event_dict.get('location').get('name')
-
-    start_date = datetime.fromisoformat(event_dict.get('startDate'))
-    try:
-        end_date = datetime.fromisoformat(event_dict.get('endDate'))
-    except:
-        end_date = start_date + timedelta(hours=3)
-    
-    event_body = Event(summary, description, location, start_date.strftime("%Y-%m-%dT%H:%M:%SZ"), end_date.strftime("%Y-%m-%dT%H:%M:%SZ"))
-    print(event_body.summary, event_body.start['dateTime'], event_body.end['dateTime'])
-    
-    event_json = json.loads(json.dumps(event_body, default=vars))
+for event in events:
+    print(event)
+    if type(event) is dict:
+        event_json = event
+    else:
+        event_json = event.gcal().__dict__
     event = service.events().insert(calendarId=calendarID, body=event_json).execute()
     print('Event created: %s\n' % (event.get('htmlLink'))) 
 
