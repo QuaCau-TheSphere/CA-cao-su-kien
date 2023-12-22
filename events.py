@@ -1,9 +1,10 @@
 # Change your calendar ID here
-calendarID = 'f784c4b938bab23382fb2347cdf787f5ae454f55895209a45ead16888e3fde23@group.calendar.google.com'
+calendarId = 'f784c4b938bab23382fb2347cdf787f5ae454f55895209a45ead16888e3fde23@group.calendar.google.com'
 
 # ┌───────────────┐
 # │ Authorization │
 # └───────────────┘
+from datetime import datetime
 import os.path
 
 from google.auth.transport.requests import Request
@@ -34,6 +35,35 @@ if not creds or not creds.valid:
     with open("token.json", "w") as token:
         token.write(creds.to_json())
 
+service = build("calendar", "v3", credentials=creds)
+
+# ┌─────────────────────────────────────┐
+# │ Deleting future events in calendars │
+# └─────────────────────────────────────┘
+now = datetime.utcnow().isoformat() + "Z"  # 'Z' indicates UTC time
+print("Deleting future events in calendars...")
+events_result = (
+    service.events()
+    .list(
+        calendarId=calendarId,
+        timeMin=now,
+        singleEvents=True,
+        orderBy="startTime",
+    )
+    .execute()
+)
+events = events_result.get("items", [])
+
+if not events:
+    print("No upcoming events found.")
+
+# Prints the start and name of the next 10 events
+events_Ids = [] 
+for event in events:
+    start = event["start"].get("dateTime", event["start"].get("date"))
+    print(start, event["summary"], event["start"].get("dateTime"), event["id"])
+    service.events().delete(calendarId=calendarId, eventId=event["id"]).execute()
+
 # ┌──────────┐
 # │ Scraping │
 # └──────────┘
@@ -45,16 +75,13 @@ events = scrape_meetup() + scrape_ticketbox()
 # ┌──────────────────────────────┐
 # │ Uploading to Google Calendar │
 # └──────────────────────────────┘
-service = build("calendar", "v3", credentials=creds)
 for event in events:
     print(event)
     if type(event) is dict:
         event_json = event
     else:
         event_json = event.gcal().__dict__
-    event = service.events().insert(calendarId=calendarID, body=event_json).execute()
+    event = service.events().insert(calendarId=calendarId, body=event_json).execute()
     print('Event created: %s\n' % (event.get('htmlLink'))) 
 
-# try:
-# except HttpError as error:
-#     print(f"An error occurred: {error}")
+print('All events are uploaded to Google Calendar!')
