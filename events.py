@@ -4,7 +4,6 @@ calendarId = 'f784c4b938bab23382fb2347cdf787f5ae454f55895209a45ead16888e3fde23@g
 # ┌───────────────┐
 # │ Authorization │
 # └───────────────┘
-from datetime import datetime
 import os.path
 
 from google.auth.transport.requests import Request
@@ -40,6 +39,8 @@ service = build("calendar", "v3", credentials=creds)
 # ┌─────────────────────────────────────┐
 # │ Deleting future events in calendars │
 # └─────────────────────────────────────┘
+from datetime import datetime
+
 now = datetime.utcnow().isoformat() + "Z"  # 'Z' indicates UTC time
 print("Deleting future events in calendars...")
 events_result = (
@@ -57,19 +58,21 @@ events = events_result.get("items", [])
 if not events:
     print("No upcoming events found.")
 
-# Prints the start and name of the next 10 events
 events_Ids = [] 
 for event in events:
     start = event["start"].get("dateTime", event["start"].get("date"))
-    print(start, event["summary"], event["start"].get("dateTime"), event["id"])
+    print('Deleting ' + event["summary"])
     service.events().delete(calendarId=calendarId, eventId=event["id"]).execute()
 
 # ┌──────────┐
 # │ Scraping │
 # └──────────┘
+import logging, traceback
+
 from modules.meetup import scrape_meetup
 from modules.ticketbox import scrape_ticketbox
-events = scrape_meetup() + scrape_ticketbox()
+from modules.liquidpedia import scrape_liquipedia
+events = scrape_meetup() + scrape_ticketbox() + scrape_liquipedia() 
 # events = [ {'summary': 'test', 'description': '', 'source': {'title': 'source title', 'url': 'https://developers.google.com/calendar/api/v3/reference/events/insert'}, 'start': {'dateTime': '2023-12-21T10:00:00Z'}, 'end': {'dateTime': '2023-12-21T12:00:00Z'}}] 
 
 # ┌──────────────────────────────┐
@@ -81,7 +84,12 @@ for event in events:
         event_json = event
     else:
         event_json = event.gcal().__dict__
-    event = service.events().insert(calendarId=calendarId, body=event_json).execute()
-    print('Event created: %s\n' % (event.get('htmlLink'))) 
+
+    try:
+        event = service.events().insert(calendarId=calendarId, body=event_json).execute()
+        print('Event created: %s\n' % (event.get('htmlLink'))) 
+    except:
+        logging.error(traceback.format_exc())
+        print('Unable to upload event to Google Calendar')
 
 print('All events are uploaded to Google Calendar!')

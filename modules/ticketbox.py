@@ -28,10 +28,10 @@ def scrape_ticketbox() -> list:
     i = 0
     print('Getting Ticketbox events...')
     
-    # scrape_result: Response = get('https://ticketbox.vn/events/ho-chi-minh')
-    # file = open('ticketbox.html', 'wb')
-    # file.write(scrape_result.content)
-    # file.close()
+    scrape_result: Response = get('https://ticketbox.vn/events/ho-chi-minh')
+    file = open('ticketbox.html', 'wb')
+    file.write(scrape_result.content)
+    file.close()
 
     listing_page_html = open("ticketbox.html", "r") 
     listing_page_soup = BeautifulSoup(listing_page_html, 'html5lib')
@@ -79,15 +79,9 @@ def scrape_ticketbox() -> list:
 
         except:
             logging.error(traceback.format_exc())
-            print('Unable to get event data from Ticketbox')
+            print('Unable to get event data from ' + event_url)
 
-        if i < 0:
-            print(i, 'sleep')
-            sleep(3)
-            i+=1
-        else:
-            break
-
+        sleep(3)
     
     return events
 
