@@ -1,5 +1,4 @@
 import logging, traceback
-import json
 
 from bs4 import BeautifulSoup, Tag
 from time import sleep
@@ -24,16 +23,13 @@ def process_datetime(date_raw, time_raw):
     return datetime(year=year, month=month, day=day, hour=hour, minute=minute, tzinfo=timezone_vietnam)
     # return datetime(year=year, month=month, day=day, hour=hour, minute=minute, tzinfo=timezone_vietnam).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-def scrape_ticketbox() -> list:
-    i = 0
-    print('Getting Ticketbox events...')
-    
-    scrape_result: Response = get('https://ticketbox.vn/events/ho-chi-minh')
+def scrape_ticketbox(source) -> list:
+    scrape_result: Response = get(source)
     file = open('ticketbox.html', 'wb')
     file.write(scrape_result.content)
     file.close()
 
-    listing_page_html = open("ticketbox.html", "r") 
+    listing_page_html = open("ticketbox.html", "r", encoding="utf8") 
     listing_page_soup = BeautifulSoup(listing_page_html, 'html5lib')
 
     print('Processing Ticketbox events...')
@@ -81,7 +77,7 @@ def scrape_ticketbox() -> list:
             logging.error(traceback.format_exc())
             print('Unable to get event data from ' + event_url)
 
-        sleep(3)
+        sleep(1)
     
     return events
 

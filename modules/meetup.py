@@ -6,9 +6,8 @@ import logging, traceback
 
 from modules.utils import Event
 
-def scrape_meetup():
-    print('Getting Meetup events...')
-    scrape_result = requests.get('https://www.meetup.com/find/?source=EVENTS&eventType=inPerson&sortField=DATETIME&location=vn--Ho%20Chi%20Minh%20City')
+def scrape_meetup(source):
+    scrape_result = requests.get(source)
 
     file = open('meetup.html', 'wb')
     file.write(scrape_result.content)
@@ -36,7 +35,7 @@ def scrape_meetup():
             events.append(event)
         except:
             logging.error(traceback.format_exc())
-            print('Unable to get event data from ' + url)
+            print('Unable to get event data from ' + url) #type: ignore
 
     return events
 

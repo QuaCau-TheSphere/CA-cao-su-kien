@@ -5,10 +5,9 @@ from datetime import datetime, timedelta
 from modules.utils import Event
 
 
-def scrape_liquipedia():
-    print('Getting liquipedia events...')
+def scrape_liquipedia(source):
     try:
-        scrape_result = requests.get('https://tl.net/calendar/xml/calendar.xml')
+        scrape_result = requests.get(source)
 
         file = open('liquipedia.html', 'wb')
         file.write(scrape_result.content)
