@@ -38,10 +38,10 @@ service = build("calendar", "v3", credentials=creds)
 from datetime import datetime
 import logging, traceback
 
-def delete_upcoming_events(calendarID):
-    '''Delete upcoming events from previous scrape to avoid duplication'''
+def clean_upcoming_events(calendarID):
+    '''Clean upcoming events from previous scrape to avoid duplication'''
     now = datetime.utcnow().isoformat() + "Z"  # 'Z' indicates UTC time
-    print("Deleting upcoming events in calendars...")
+    print("Cleaning upcoming events in calendars...")
     events_result = service.events().list(
         calendarId=calendarID,
         timeMin=now,
@@ -54,7 +54,7 @@ def delete_upcoming_events(calendarID):
         print("No upcoming events found.")
 
     for event in events:
-        print('Deleting ' + event["summary"])
+        print('Cleaning ' + event["summary"])
         service.events().delete(calendarId=calendarID, eventId=event["id"]).execute()
 
 def insert_events(events, calendarID):
@@ -79,9 +79,13 @@ def insert_events(events, calendarID):
 # │ Scraping │
 # └──────────┘
 from ruamel.yaml import YAML
-from cowsay import cow, CowsayError
+from cowsay import cow                                    #type: ignore
 config = YAML().load(open("config.yaml", "r"))
 
+for site_config in config:
+    calendarID = site_config['calendarID']
+    clean_upcoming_events(calendarID) 
+    
 for site_config in config:
     sitename = site_config['sitename']
     source = site_config['source']
@@ -92,21 +96,18 @@ for site_config in config:
             from modules.meetup import scrape_meetup
             cow(f'Getting {sitename} events...')
             meetup_events = scrape_meetup(source)
-            delete_upcoming_events(calendarID) 
             insert_events(meetup_events, calendarID) 
         
         case 'ticketbox':
             cow(f'Getting {sitename} events...')
             from modules.ticketbox import scrape_ticketbox
             ticketbox_events = scrape_ticketbox(source)
-            delete_upcoming_events(calendarID) 
             insert_events(ticketbox_events, calendarID) 
 
         case 'liquipedia':
             cow(f'Getting {sitename} events...')
             from modules.liquipedia import scrape_liquipedia
             liquipedia_events = scrape_liquipedia(source)
-            delete_upcoming_events(calendarID) 
             insert_events(liquipedia_events, calendarID) 
 
 print('Done')
