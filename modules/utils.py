@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class Event:
     def __init__(self, summary:str, description:str, location:str, url: str, startDate:datetime, endDate:datetime):
@@ -23,11 +23,11 @@ class Event:
     
     def gcal(self):
         self.start = {
-            'dateTime': self.startDate.strftime("%Y-%m-%dT%H:%M:%S"),
+            'dateTime': (self.startDate + timedelta(days=0)).strftime("%Y-%m-%dT%H:%M:%S"),
             'timeZone': 'Asia/Ho_Chi_Minh'
         } 
         self.end   = {
-            'dateTime': self.endDate.strftime("%Y-%m-%dT%H:%M:%S"),
+            'dateTime': (self.endDate + timedelta(days=0)).strftime("%Y-%m-%dT%H:%M:%S"),
             'timeZone': 'Asia/Ho_Chi_Minh'
         } 
         delattr(self, "startDate") 

@@ -7,3 +7,6 @@
 - sitename: ticketbox
   calendarID: f784c4b938bab23382fb2347cdf787f5ae454f55895209a45ead16888e3fde23@group.calendar.google.com
   source: https://ticketbox.vn/events/ho-chi-minh
+- sitename: esportapi
+  calendarID: f784c4b938bab23382fb2347cdf787f5ae454f55895209a45ead16888e3fde23@group.calendar.google.com
+  source: https://ticketbox.vn/events/ha-noi

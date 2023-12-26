@@ -2,6 +2,7 @@
 # │ Authorization │
 # └───────────────┘
 import os.path
+import json
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -35,12 +36,12 @@ service = build("calendar", "v3", credentials=creds)
 
 
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging, traceback
 
 def clean_upcoming_events(calendarID):
     '''Clean upcoming events from previous scrape to avoid duplication'''
-    now = datetime.utcnow().isoformat() + "Z"  # 'Z' indicates UTC time
+    now = (datetime.utcnow()+timedelta(days=0)).isoformat() + "Z"  # 'Z' indicates UTC time
     print("Cleaning upcoming events in calendars...")
     events_result = service.events().list(
         calendarId=calendarID,
@@ -64,9 +65,11 @@ def insert_events(events, calendarID):
         if type(event) is dict:
             event_json = event
         else:
+            # event_json = json.dumps(event.gcal(), default=vars)
             event_json = event.gcal().__dict__
 
         try:
+            print(event_json)
             event = service.events().insert(calendarId=calendarID, body=event_json).execute()
             print('Event created: %s\n' % (event.get('htmlLink'))) 
         except:
@@ -109,5 +112,12 @@ for site_config in config:
             from modules.liquipedia import scrape_liquipedia
             liquipedia_events = scrape_liquipedia(source)
             insert_events(liquipedia_events, calendarID) 
+
+        case 'esportapi':
+            cow(f'Getting {sitename} events...')
+            from modules.esportapi import scrape_esportapi
+            esportapi_events = scrape_esportapi()
+            print(esportapi_events)
+            insert_events(esportapi_events, calendarID) 
 
 print('Done')
