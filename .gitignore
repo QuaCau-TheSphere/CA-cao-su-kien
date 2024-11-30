@@ -1,7 +1,6 @@
 credentials.json
 token.json
 calendarID.txt
-__pycache__
-.vscode
 *.html
 test.py
+node_modules

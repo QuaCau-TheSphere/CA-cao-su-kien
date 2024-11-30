@@ -1,0 +1,24 @@
+{
+  "tasks": {
+    "dev": "deno run --watch -A --unstable-temporal main.ts",
+    "test": "deno run --watch -A --unstable-temporal scr/test.ts",
+    "testFile": "deno run --watch -A --unstable-temporal "
+  },
+  "lint": {
+    "rules": {
+      "tags": ["fresh", "recommended"]
+    }
+  },
+  "fmt": {
+    "lineWidth": 150
+  },
+  "compilerOptions": {
+  },
+  "imports": {
+    "@std/log": "jsr:@std/log@^0.224.11",
+    "@std/yaml": "jsr:@std/yaml@^1.0.5",
+    "hast-util-from-html": "npm:hast-util-from-html@^2.0.3",
+    "hast-util-select": "npm:hast-util-select@^6.0.3"
+  },
+  "nodeModulesDir": "none"
+}
