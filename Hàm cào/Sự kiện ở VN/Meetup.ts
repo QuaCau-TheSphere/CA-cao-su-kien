@@ -1,9 +1,10 @@
 import * as log from "@std/log";
-import { fromHtml } from "hast-util-from-html";
-import { select } from "hast-util-select";
+import { slugify } from "@std/text/unstable-slugify";
 import { SựKiện } from "../../Code hỗ trợ/Kiểu cho sự kiện.ts";
 import { Url } from "../../Code hỗ trợ/Kiểu cho URL.ts";
-
+import { select } from "hast-util-select";
+import { toText } from "hast-util-to-text";
+import { fromHtml } from "hast-util-from-html";
 interface VậtThểSựKiệnRaw {
   "__typename": string;
   "id": string;
@@ -36,7 +37,6 @@ interface VậtThểSựKiệnRaw {
   "venue": string;
   "socialLabels": [];
 }
-
 interface SựKiệnRaw {
   "__typename": string;
   "id": string;
@@ -191,25 +191,42 @@ interface SựKiệnRaw {
   "currency": string;
 }
 
-async function lấyCache(source: Url) {
-  let html;
+async function lấyCache(url: Url, loạiUrl: "Trang sự kiện" | undefined = undefined) {
+  let html, cache, a, b;
+  switch (loạiUrl) {
+    case undefined:
+      cache = "Cache/Meetup/Meetup.html";
+      a = "Đọc từ cache của Meetup";
+      b = "Cào Meetup";
+      break;
+
+    default: {
+      const đườngDẫn = slugify(new URL(url).pathname);
+      cache = `Cache/Meetup/${đườngDẫn}.html`;
+      a = `Đọc cache của ${đườngDẫn}`;
+      b = `Cào ${url}`;
+      break;
+    }
+  }
+
   try {
-    html = await Deno.readTextFile("Meetup.html");
+    html = await Deno.readTextFile(cache);
+    log.debug(a);
   } catch {
-    log.info("Cào Meetup");
-    html = await (await fetch(source)).text();
-    await Deno.writeTextFile("Meetup.html", html);
+    log.debug(b);
+    html = await (await fetch(url)).text();
+    await Deno.writeTextFile(cache, html);
   }
 
   return html;
 }
 
-async function lấyDsUrl(source: Url) {
-  const html = await lấyCache(source);
+async function lấyDsUrl(urlTrangTổngHợp: Url) {
+  const html = await lấyCache(urlTrangTổngHợp);
   const tree = fromHtml(html, { fragment: true });
   try {
-    const elementChứaSựKiện = select("#__NEXT_DATA__", tree)!.children[0].value;
-    const vậtThểChứaDsSựKiệnRaw = JSON.parse(elementChứaSựKiện!)["props"]["pageProps"]["__APOLLO_STATE__"] as VậtThểSựKiệnRaw;
+    const elementChứaSựKiện = select("#__NEXT_DATA__", tree)!;
+    const vậtThểChứaDsSựKiệnRaw = JSON.parse(toText(elementChứaSựKiện))["props"]["pageProps"]["__APOLLO_STATE__"] as VậtThểSựKiệnRaw;
     return Object.entries(vậtThểChứaDsSựKiệnRaw).flatMap((entry) => {
       const { title, eventUrl } = entry[1];
       return eventUrl && title ? [eventUrl] : [];
@@ -219,23 +236,29 @@ async function lấyDsUrl(source: Url) {
   }
 }
 
-async function lấySựKiệnRaw(skUrl: Url) {
-  const html = await (await fetch(skUrl)).text();
+async function lấySựKiệnRaw(urlTrangSựKiện: Url) {
+  const html = await lấyCache(urlTrangSựKiện, "Trang sự kiện");
   const tree = fromHtml(html, { fragment: true });
   try {
-    const elementChứaSựKiện = select("#__NEXT_DATA__", tree)!.children[0].value;
-    return JSON.parse(elementChứaSựKiện!)["props"]["pageProps"]["event"] as SựKiệnRaw;
+    const elementChứaSựKiện = select("#__NEXT_DATA__", tree)!;
+    return JSON.parse(toText(elementChứaSựKiện))["props"]["pageProps"]["event"] as SựKiệnRaw;
   } catch {
     throw new Error("Meetup đã thay đổi cấu trúc website. Cần chỉnh lại code");
   }
 }
 
 export async function càoMeetup(source: Url): Promise<SựKiện[]> {
+  log.info("Cào Meetup");
   const dsUrl = await lấyDsUrl(source);
   const dsSựKiện: SựKiện[] = [];
 
   for (const url of dsUrl) {
-    const { title, description, eventUrl, venue, featuredEventPhoto, dateTime, endTime } = await lấySựKiệnRaw(url);
+    const sựKiệnRaw = await lấySựKiệnRaw(url);
+    if (!sựKiệnRaw) {
+      console.warn(`Không lấy được dữ liệu từ ${url}`);
+      continue;
+    }
+    const { title, description, eventUrl, venue, featuredEventPhoto, dateTime, endTime } = sựKiệnRaw;
     const event = new SựKiện({
       tiêuĐề: title,
       môTả: description,

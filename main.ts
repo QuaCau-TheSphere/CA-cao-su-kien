@@ -10,14 +10,19 @@ const mapHàmCào = new Map<TênWebsite, HàmCào>([
   ["Meetup", càoMeetup],
 ]);
 
-for (const vậtThểWebsite of yaml.Websites) {
+const dsSựKiện: SựKiện[] = [];
+for (const vậtThểWebsite of yaml["Danh sách cào"]) {
   const [tênWebsite, { "Tên lịch": tênLịch, URL: url }] = Object.entries(vậtThểWebsite)[0];
-  log.info(`Cào ${tênWebsite}`);
   const hàmCào = mapHàmCào.get(tênWebsite);
   if (hàmCào) {
-    // const dsSựKiện = await hàmCào(url);
-    // console.log("🚀 ~ dsSựKiện:", dsSựKiện);
+    try {
+      const dsSựKiệnTừWebsite = await hàmCào(url);
+      dsSựKiện.push(...dsSựKiệnTừWebsite);
+    } catch (error) {
+      log.error(error);
+    }
   } else {
-    log.error(`Chưa thiết lập hàm cào cho ${tênWebsite}`);
+    log.warn(`Chưa thiết lập hàm cào cho ${tênWebsite}. Bỏ qua việc cào ${tênWebsite}`);
   }
 }
+await Deno.writeTextFile("Cache/Sự kiện.json", JSON.stringify(dsSựKiện, null, 2));

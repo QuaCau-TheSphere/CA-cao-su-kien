@@ -2,7 +2,7 @@ import { parse } from "@std/yaml";
 
 export type TênWebsite = string;
 interface ThiếtLập {
-  Websites: Record<TênWebsite, {
+  "Danh sách cào": Record<TênWebsite, {
     "Tên lịch": string;
     URL: string;
   }>[];

@@ -4,3 +4,4 @@ calendarID.txt
 *.html
 test.py
 node_modules
+client_secret*
