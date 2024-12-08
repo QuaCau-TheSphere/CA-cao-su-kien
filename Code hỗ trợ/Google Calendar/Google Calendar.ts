@@ -40,7 +40,7 @@ export async function liệtKêSựKiện(calendarApi: calendar_v3.Calendar, idL
     log.info("Không có sự kiện nào mới trong lịch.");
     return;
   }
-  log.info(`${sốLượng} sự kiện trong tương lai`);
+  log.info(`Danh sách ${sốLượng} sự kiện trong tương lai`);
   for (const sựKiện of dsSựKiện) {
     const { start: { dateTime, date }, summary } = sựKiện;
     console.log(`${dateTime || date} - ${summary}`);
@@ -48,18 +48,15 @@ export async function liệtKêSựKiện(calendarApi: calendar_v3.Calendar, idL
 }
 
 export async function xoáSựKiệnTươngLai(calendarApi: calendar_v3.Calendar, idLịch: string) {
-  log.info("Xoá sự kiện trong tương lai");
   const kếtQuảTruyVấn = await calendarApi.events.list({
     calendarId: idLịch,
-    timeMin: bâyGiờ(),
+    // timeMin: bâyGiờ(), //todo
     singleEvents: true,
     orderBy: "startTime",
   });
   const dsSựKiện = kếtQuảTruyVấn.data.items || [];
 
-  if (!dsSựKiện.length) {
-    log.info("Không thấy sự kiện trong tương lai");
-  }
+  log.info(`Xoá ${dsSựKiện.length} sự kiện trong tương lai`);
 
   for (const sựKiện of dsSựKiện) {
     console.log("Xoá " + sựKiện.summary);
@@ -75,18 +72,18 @@ export async function nhậpSựKiện(calendarApi: calendar_v3.Calendar, dsSự
   const tênLịch = await lấyTênLịch(calendarApi, idLịch);
   for (const sựKiện of dsSựKiện) {
     // if (dsSựKiện.indexOf(sựKiện) !== 0) continue;
-
+    // if (sựKiện.lúcBắtĐầu) //todo
     try {
       const { data: { htmlLink, summary } } = await calendarApi.events.insert({
         calendarId: idLịch,
         requestBody: sựKiệnGcal(sựKiện),
       });
-      console.log("Nhập", summary);
-      console.debug(htmlLink);
+      console.log(summary);
+      // console.debug(htmlLink);
     } catch (error) {
       log.error(`Không chèn được sự kiện lên ${tênLịch}`);
       console.error(error);
     }
-    log.info(`Đã nhập xong sự kiện vào ${tênLịch}!`);
   }
+  log.info(`Đã nhập xong ${dsSựKiện.length} sự kiện vào lịch ${tênLịch}`);
 }

@@ -1,27 +1,26 @@
 Danh sách cào:
-      - Liquipedia:
-              Tên lịch: Test ganu
-              URL: https://tl.net/calendar/xml/calendar.xml
+        - Meetup:
+                  Tên lịch: Test ganu
+                  URL: https://www.meetup.com/find/?source=EVENTS&eventType=inPerson&sortField=DATETIME&location=vn--Ho%20Chi%20Minh%20City
+        - Săn sự kiện:
+                  Tên lịch: Test ganu
+                  URL: https://sansukien.com/danh-sach-su-kien
 
-      - Liquipedia:
-              Tên lịch: Test ganu
-              URL: https://www.tonggiaophanhanoi.org/thang-muoi-hai-2024/
+        - Liquipedia:
+                  Tên lịch: Test ganu
+                  URL: https://tl.net/calendar/xml/calendar.xml
 
-      - Meetup:
-              Tên lịch: Test ganu
-              URL: https://www.meetup.com/find/?source=EVENTS&eventType=inPerson&sortField=DATETIME&location=vn--Ho%20Chi%20Minh%20City
+        - Công giáo:
+                  Tên lịch: Test ganu
+                  URL: https://www.tonggiaophanhanoi.org/thang-muoi-hai-2024/
 
-      - Ticketbox:
-              Tên lịch: Test ganu
-              URL: https://ticketbox.vn/events/ho-chi-minh
+        - Ticketbox:
+                  Tên lịch: Test ganu
+                  URL: https://ticketbox.vn/events/ho-chi-minh
 
-      - Săn sự kiện:
-              Tên lịch: Test ganu
-              URL: https://sansukien.com/danh-sach-su-kien
-
-      - Esportapi:
-              Tên lịch: Test ganu
-              URL: https://ticketbox.vn/events/ha-noi
+        - Esportapi:
+                  Tên lịch: Test ganu
+                  URL: https://ticketbox.vn/events/ha-noi
 
 Tên lịch:
-      Test ganu: f784c4b938bab23382fb2347cdf787f5ae454f55895209a45ead16888e3fde23@group.calendar.google.com
+        Test ganu: f784c4b938bab23382fb2347cdf787f5ae454f55895209a45ead16888e3fde23@group.calendar.google.com

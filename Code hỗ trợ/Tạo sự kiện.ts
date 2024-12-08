@@ -44,8 +44,8 @@ export class SựKiện {
   tiêuĐề: string;
   môTả: string;
   địaĐiểm: string;
-  lúcBắtĐầu: Temporal.Instant;
-  lúcKếtThúc: Temporal.Instant;
+  lúcBắtĐầu: Temporal.ZonedDateTime;
+  lúcKếtThúc: Temporal.ZonedDateTime;
   ảnh?: Url | Url[];
   nguồnLấy: Url;
   lịch?: string;
