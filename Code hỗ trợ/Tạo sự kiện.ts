@@ -1,5 +1,5 @@
 import * as log from "@std/log";
-import { Url } from "./Kiểu cho URL.ts";
+import { Url } from "./Khác.ts";
 import đọcThiếtLập, { TênWebsite } from "./Đọc thiết lập.ts";
 import { càoMeetup } from "../Hàm cào/Sự kiện ở VN/Meetup.ts";
 

@@ -1,7 +1,7 @@
 import * as log from "@std/log";
 import { slugify } from "@std/text/unstable-slugify";
-import { SựKiện } from "../../Code hỗ trợ/Kiểu cho sự kiện.ts";
-import { Url } from "../../Code hỗ trợ/Kiểu cho URL.ts";
+import { SựKiện } from "../../Code hỗ trợ/Tạo sự kiện.ts";
+import { Url } from "../../Code hỗ trợ/Khác.ts";
 import { select } from "hast-util-select";
 import { toText } from "hast-util-to-text";
 import { fromHtml } from "hast-util-from-html";

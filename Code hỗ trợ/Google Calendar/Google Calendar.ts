@@ -1,6 +1,7 @@
 import { calendar_v3 } from "googleapis";
 import * as log from "@std/log";
-import { SựKiện } from "../Kiểu cho sự kiện.ts";
+import { SựKiện } from "../Tạo sự kiện.ts";
+import { bâyGiờ } from "../Khác.ts";
 
 async function lấyTênLịch(calendarApi: calendar_v3.Calendar, idLịch: string) {
   return (await calendarApi.calendarList.get({ calendarId: idLịch })).data.summary;
@@ -26,33 +27,31 @@ function sựKiệnGcal({ tiêuĐề, môTả, địaĐiểm, nguồnLấy, lúc
   };
 }
 
-export async function liệtKêSựKiện(calendarApi: calendar_v3.Calendar, idLịch: string) {
+export async function liệtKêSựKiện(calendarApi: calendar_v3.Calendar, idLịch: string, sốLượng = 10) {
   const res = await calendarApi.events.list({
     calendarId: idLịch,
-    timeMin: new Date().toISOString(),
-    maxResults: 10,
+    timeMin: bâyGiờ(),
+    maxResults: sốLượng,
     singleEvents: true,
     orderBy: "startTime",
   });
-  const events = res.data.items;
-  if (!events || events.length === 0) {
-    console.log("No upcoming events found.");
+  const dsSựKiện = res.data.items;
+  if (!dsSựKiện || dsSựKiện.length === 0) {
+    log.info("Không có sự kiện nào mới trong lịch.");
     return;
   }
-  console.log("Upcoming 10 events:");
-  events.map((event, i) => {
-    const start = event?.start?.dateTime || event?.start?.date;
-    console.log(`${start} - ${event.summary}`);
-  });
+  log.info(`${sốLượng} sự kiện trong tương lai`);
+  for (const sựKiện of dsSựKiện) {
+    const { start: { dateTime, date }, summary } = sựKiện;
+    console.log(`${dateTime || date} - ${summary}`);
+  }
 }
 
 export async function xoáSựKiệnTươngLai(calendarApi: calendar_v3.Calendar, idLịch: string) {
   log.info("Xoá sự kiện trong tương lai");
-  const { year, month, day, hour, minute, second, offset } = Temporal.Now.zonedDateTimeISO();
-  const now = `${year}-${month}-${day}T${hour}:${minute}:${second}${offset}`;
   const kếtQuảTruyVấn = await calendarApi.events.list({
     calendarId: idLịch,
-    timeMin: now,
+    timeMin: bâyGiờ(),
     singleEvents: true,
     orderBy: "startTime",
   });
