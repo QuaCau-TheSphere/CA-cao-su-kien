@@ -1,11 +1,11 @@
 import * as log from "@std/log";
 import { slugify } from "@std/text/unstable-slugify";
 import { SựKiện } from "../../Code hỗ trợ/Tạo sự kiện.ts";
-import { Url } from "../../Code hỗ trợ/Khác.ts";
 import { select } from "hast-util-select";
 import { toText } from "hast-util-to-text";
 import { fromHtml } from "hast-util-from-html";
-interface VậtThểSựKiệnRaw {
+import { thiếtLập, TênLịch, Url } from "../../Code hỗ trợ/Hàm hỗ trợ.ts";
+interface VậtThểSựKiệnThô {
   "__typename": string;
   "id": string;
   "dateTime": string;
@@ -37,7 +37,7 @@ interface VậtThểSựKiệnRaw {
   "venue": string;
   "socialLabels": [];
 }
-interface SựKiệnRaw {
+interface SựKiệnThô {
   "__typename": string;
   "id": string;
   "token": string;
@@ -226,7 +226,7 @@ async function lấyDsUrl(urlTrangTổngHợp: Url) {
   const tree = fromHtml(html, { fragment: true });
   try {
     const elementChứaSựKiện = select("#__NEXT_DATA__", tree)!;
-    const vậtThểChứaDsSựKiệnRaw = JSON.parse(toText(elementChứaSựKiện))["props"]["pageProps"]["__APOLLO_STATE__"] as VậtThểSựKiệnRaw;
+    const vậtThểChứaDsSựKiệnRaw = JSON.parse(toText(elementChứaSựKiện))["props"]["pageProps"]["__APOLLO_STATE__"] as VậtThểSựKiệnThô;
     return Object.entries(vậtThểChứaDsSựKiệnRaw).flatMap((entry) => {
       const { title, eventUrl } = entry[1];
       return eventUrl && title ? [eventUrl] : [];
@@ -236,29 +236,29 @@ async function lấyDsUrl(urlTrangTổngHợp: Url) {
   }
 }
 
-async function lấySựKiệnRaw(urlTrangSựKiện: Url) {
+async function lấySựKiệnThô(urlTrangSựKiện: Url) {
   const html = await lấyCache(urlTrangSựKiện, "Trang sự kiện");
   const tree = fromHtml(html, { fragment: true });
   try {
     const elementChứaSựKiện = select("#__NEXT_DATA__", tree)!;
-    return JSON.parse(toText(elementChứaSựKiện))["props"]["pageProps"]["event"] as SựKiệnRaw;
+    return JSON.parse(toText(elementChứaSựKiện))["props"]["pageProps"]["event"] as SựKiệnThô;
   } catch {
     throw new Error("Meetup đã thay đổi cấu trúc website. Cần chỉnh lại code");
   }
 }
 
-export async function càoMeetup(source: Url): Promise<SựKiện[]> {
+export async function càoMeetup(source: Url, tênLịch: TênLịch): Promise<SựKiện[]> {
   log.info("Cào Meetup");
   const dsUrl = await lấyDsUrl(source);
   const dsSựKiện: SựKiện[] = [];
 
   for (const url of dsUrl) {
-    const sựKiệnRaw = await lấySựKiệnRaw(url);
-    if (!sựKiệnRaw) {
+    const sựKiệnThô = await lấySựKiệnThô(url);
+    if (!sựKiệnThô) {
       console.warn(`Không lấy được dữ liệu từ ${url}`);
       continue;
     }
-    const { title, description, eventUrl, venue, featuredEventPhoto, dateTime, endTime } = sựKiệnRaw;
+    const { title, description, eventUrl, venue, featuredEventPhoto, dateTime, endTime } = sựKiệnThô;
     const event = new SựKiện({
       tiêuĐề: title,
       môTả: description,
@@ -267,6 +267,7 @@ export async function càoMeetup(source: Url): Promise<SựKiện[]> {
       lúcBắtĐầu: Temporal.Instant.from(dateTime),
       lúcKếtThúc: Temporal.Instant.from(endTime),
       ảnh: featuredEventPhoto?.baseUrl,
+      tênLịch: tênLịch,
     });
     dsSựKiện.push(event);
   }

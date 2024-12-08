@@ -9,7 +9,7 @@ const TOKEN_PATH = resolve("Code hỗ trợ", "Google Calendar", "token.json");
 const CREDENTIALS_PATH = resolve(
   "Code hỗ trợ",
   "Google Calendar",
-  "client_secret_834783543230-s6d4eg4ja7es4grp5bp1ajavce24pic2.apps.googleusercontent.com.json",
+  "credentials.json",
 );
 
 /**
