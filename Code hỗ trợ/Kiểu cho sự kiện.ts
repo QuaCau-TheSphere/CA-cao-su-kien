@@ -1,11 +1,46 @@
+import * as log from "@std/log";
 import { Url } from "./Kiểu cho URL.ts";
+import đọcThiếtLập, { TênWebsite } from "./Đọc thiết lập.ts";
+import { càoMeetup } from "../Hàm cào/Sự kiện ở VN/Meetup.ts";
 
-interface NewType {
-  dateTime: string;
-  timeZone: string;
+type HàmCào = (url: Url) => Promise<SựKiện[]>;
+
+const mapHàmCào = new Map<TênWebsite, HàmCào>([
+  ["Meetup", càoMeetup],
+]);
+
+async function tạoDsSựKiện() {
+  const dsSựKiện: SựKiện[] = [];
+  for (const vậtThểWebsite of đọcThiếtLập["Danh sách cào"]) {
+    const [tênWebsite, { "Tên lịch": tênLịch, URL: url }] = Object.entries(vậtThểWebsite)[0];
+    const hàmCào = mapHàmCào.get(tênWebsite);
+    if (hàmCào) {
+      try {
+        const dsSựKiệnTừWebsite = await hàmCào(url);
+        dsSựKiện.push(...dsSựKiệnTừWebsite);
+      } catch (error) {
+        log.error(error);
+      }
+    } else {
+      log.warn(`Chưa thiết lập hàm cào cho ${tênWebsite}. Bỏ qua việc cào ${tênWebsite}`);
+    }
+  }
+  return dsSựKiện;
+}
+export async function lấyCache() {
+  const đườngDẫnTớiCache = `Cache/${Temporal.Now.plainDateISO()}.json`;
+  try {
+    log.info("Dùng cache sự kiện");
+    return JSON.parse(await Deno.readTextFile(đườngDẫnTớiCache)) as SựKiện[];
+  } catch (error) {
+    log.info("Không có cache, cào mới");
+    const ds = await tạoDsSựKiện();
+    await Deno.writeTextFile(đườngDẫnTớiCache, JSON.stringify(ds, null, 2));
+    return ds;
+  }
 }
 
-export interface SựKiện {
+export class SựKiện {
   tiêuĐề: string;
   môTả: string;
   địaĐiểm: string;
@@ -13,9 +48,8 @@ export interface SựKiện {
   lúcKếtThúc: Temporal.Instant;
   ảnh?: Url | Url[];
   nguồnLấy: Url;
-}
+  lịch?: string;
 
-export class SựKiện {
   constructor({ tiêuĐề, môTả, địaĐiểm, nguồnLấy, lúcBắtĐầu, lúcKếtThúc, ảnh }: SựKiện) {
     this.tiêuĐề = tiêuĐề;
     this.môTả = môTả;
@@ -25,33 +59,5 @@ export class SựKiện {
 
     this.lúcBắtĐầu = lúcBắtĐầu;
     this.lúcKếtThúc = lúcKếtThúc;
-  }
-}
-
-export class GCalEvent {
-  summary: string;
-  description: string;
-  location: string;
-  source: { title: string; url: string };
-  start?: NewType;
-  end?: NewType;
-
-  constructor({ tiêuĐề, môTả, địaĐiểm, url, lúcBắtĐầu, lúcKếtThúc }: SựKiện) {
-    this.summary = tiêuĐề;
-    this.description = môTả;
-    this.location = địaĐiểm;
-    this.source = {
-      title: url,
-      url: url,
-    };
-
-    this.start = {
-      dateTime: format(lúcBắtĐầu, "yyyy-MM-dd'T'HH:mm:ss"),
-      timeZone: "Asia/Ho_Chi_Minh",
-    };
-    this.end = {
-      dateTime: format(lúcKếtThúc, "yyyy-MM-dd'T'HH:mm:ss"),
-      timeZone: "Asia/Ho_Chi_Minh",
-    };
   }
 }

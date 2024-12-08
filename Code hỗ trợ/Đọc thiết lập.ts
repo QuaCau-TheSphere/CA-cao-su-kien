@@ -8,4 +8,4 @@ interface ThiếtLập {
   }>[];
   "Tên lịch": Record<string, string>;
 }
-export const yaml = parse(await Deno.readTextFile("./Thiết lập.yaml")) as ThiếtLập;
+export default parse(await Deno.readTextFile("./Thiết lập.yaml")) as ThiếtLập;
