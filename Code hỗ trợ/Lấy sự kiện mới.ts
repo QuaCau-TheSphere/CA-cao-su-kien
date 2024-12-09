@@ -1,6 +1,8 @@
 import * as log from "@std/log";
-import { thiếtLập, TênLịch, TênWebsite, Url } from "./Hàm hỗ trợ.ts";
+import { hômNay, thiếtLập, TênLịch, TênWebsite, Url } from "./Hàm hỗ trợ.ts";
 import { càoMeetup } from "../Hàm cào/Sự kiện ở VN/Meetup.ts";
+import { resolve } from "@std/path/resolve";
+import { ĐƯỜNG_DẪN_CACHE } from "./Cache.ts";
 
 type HàmCào = (url: Url, tênLịch: TênLịch) => Promise<SựKiện[]>;
 const mapHàmCào = new Map<TênWebsite, HàmCào>([
@@ -56,14 +58,14 @@ export class SựKiện {
  * Kiểm tra xem hôm nay đã tạo cache chưa. Nếu có thì dùng cache hôm nay. Nếu chưa thì mới cào mới
  */
 export async function lấySựKiện() {
-  const đườngDẫnTớiCache = `Cache/${Temporal.Now.plainDateISO()}.json`;
+  const cacheSựKiệnHômNay = resolve(ĐƯỜNG_DẪN_CACHE, `${hômNay}.json`);
   try {
     log.info("Dùng cache sự kiện");
-    return JSON.parse(await Deno.readTextFile(đườngDẫnTớiCache)) as SựKiện[];
+    return JSON.parse(await Deno.readTextFile(cacheSựKiệnHômNay)) as SựKiện[];
   } catch (error) {
     log.info("Không có cache, cào mới");
     const ds = await tạoDsSựKiện();
-    await Deno.writeTextFile(đườngDẫnTớiCache, JSON.stringify(ds, null, 2));
+    await Deno.writeTextFile(cacheSựKiệnHômNay, JSON.stringify(ds, null, 2));
     return ds;
   }
 }

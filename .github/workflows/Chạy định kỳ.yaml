@@ -1,0 +1,20 @@
+name: Chạy định kỳ
+on: 
+  # push:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 0"
+jobs:
+  cron:
+    name: deno task start
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v4
+
+      - name: Cài Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: vx.x.x
+
+      - run: deno task start

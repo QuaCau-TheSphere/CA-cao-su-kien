@@ -1,11 +1,12 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {
-		"yaml.schemas": {},
-		"deno.enable": true
-	}
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "yaml.schemas": {},
+    "deno.enable": true,
+    "git.postCommitCommand": "sync"
+  }
 }

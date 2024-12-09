@@ -6,11 +6,7 @@ import { authenticate as xácThựcClient } from "@google-cloud/local-auth";
 
 const SCOPES = ["https://www.googleapis.com/auth/calendar"];
 const TOKEN_PATH = resolve("Code hỗ trợ", "Google Calendar", "token.json");
-const CREDENTIALS_PATH = resolve(
-  "Code hỗ trợ",
-  "Google Calendar",
-  "credentials.json",
-);
+const CREDENTIALS_PATH = resolve("Code hỗ trợ", "Google Calendar", "credentials.json");
 
 /**
  * Thông tin xác thực (credential)

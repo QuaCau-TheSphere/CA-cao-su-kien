@@ -1,8 +1,8 @@
-// import { calendar_v3 } from "googleapis";
 import * as log from "@std/log";
-import { SựKiện } from "../Tạo sự kiện.ts";
-import { bâyGiờ, lấyCacheSựKiện, thiếtLập, TênLịch } from "../Hàm hỗ trợ.ts";
+import { SựKiện } from "../Lấy sự kiện mới.ts";
+import { bâyGiờ, thiếtLập, TênLịch } from "../Hàm hỗ trợ.ts";
 import { calendarApi } from "../../main.ts";
+import { lấyCacheSựKiệnMớiNhất } from "../Cache.ts";
 
 async function lấyTênLịch(idLịch: string) {
   return (await calendarApi.calendarList.get({ calendarId: idLịch })).data.summary;
@@ -66,7 +66,7 @@ export async function xoáSựKiệnTươngLai(tênLịch: string) {
   const idLịch = await lấyIdLịch(tênLịch);
   const kếtQuảTruyVấn = await calendarApi.events.list({
     calendarId: idLịch,
-    timeMin: bâyGiờ,
+    // timeMin: bâyGiờ,
     singleEvents: true,
     orderBy: "startTime",
   });
@@ -86,10 +86,10 @@ export async function xoáSựKiệnTươngLai(tênLịch: string) {
 export async function nhậpSựKiện(dsSựKiện: SựKiện[]) {
   log.info("Nhập sự kiện");
 
-  const cacheCuốiCùng = await lấyCacheSựKiện();
+  const cacheMớiNhất = await lấyCacheSựKiệnMớiNhất();
   for (const sựKiện of dsSựKiện) {
     const { tênLịch, tiêuĐề, lúcBắtĐầu } = sựKiện;
-    if (cacheCuốiCùng.some((i) => i.tiêuĐề === tiêuĐề && i.lúcBắtĐầu === lúcBắtĐầu)) {
+    if (cacheMớiNhất.some((i) => i.tiêuĐề === tiêuĐề && i.lúcBắtĐầu === lúcBắtĐầu)) {
       console.log(`Đã nhập: ${tiêuĐề}`);
       continue;
     }

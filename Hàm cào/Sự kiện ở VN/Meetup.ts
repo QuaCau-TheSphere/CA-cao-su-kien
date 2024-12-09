@@ -1,10 +1,10 @@
 import * as log from "@std/log";
-import { slugify } from "@std/text/unstable-slugify";
-import { SựKiện } from "../../Code hỗ trợ/Tạo sự kiện.ts";
+import { SựKiện } from "../../Code hỗ trợ/Lấy sự kiện mới.ts";
 import { select } from "hast-util-select";
 import { toText } from "hast-util-to-text";
 import { fromHtml } from "hast-util-from-html";
-import { thiếtLập, TênLịch, Url } from "../../Code hỗ trợ/Hàm hỗ trợ.ts";
+import { TênLịch, Url } from "../../Code hỗ trợ/Hàm hỗ trợ.ts";
+import { lấyCacheHtml } from "../../Code hỗ trợ/Cache.ts";
 interface VậtThểSựKiệnThô {
   "__typename": string;
   "id": string;
@@ -191,38 +191,8 @@ interface SựKiệnThô {
   "currency": string;
 }
 
-async function lấyCache(url: Url, loạiUrl: "Trang sự kiện" | undefined = undefined) {
-  let html, cache, a, b;
-  switch (loạiUrl) {
-    case undefined:
-      cache = "Cache/Meetup/Meetup.html";
-      a = "Đọc từ cache của Meetup";
-      b = "Cào Meetup";
-      break;
-
-    default: {
-      const đườngDẫn = slugify(new URL(url).pathname);
-      cache = `Cache/Meetup/${đườngDẫn}.html`;
-      a = `Đọc cache của ${đườngDẫn}`;
-      b = `Cào ${url}`;
-      break;
-    }
-  }
-
-  try {
-    html = await Deno.readTextFile(cache);
-    log.debug(a);
-  } catch {
-    log.debug(b);
-    html = await (await fetch(url)).text();
-    await Deno.writeTextFile(cache, html);
-  }
-
-  return html;
-}
-
 async function lấyDsUrl(urlTrangTổngHợp: Url) {
-  const html = await lấyCache(urlTrangTổngHợp);
+  const html = await lấyCacheHtml(urlTrangTổngHợp, "Meetup");
   const tree = fromHtml(html, { fragment: true });
   try {
     const elementChứaSựKiện = select("#__NEXT_DATA__", tree)!;
@@ -237,7 +207,7 @@ async function lấyDsUrl(urlTrangTổngHợp: Url) {
 }
 
 async function lấySựKiệnThô(urlTrangSựKiện: Url) {
-  const html = await lấyCache(urlTrangSựKiện, "Trang sự kiện");
+  const html = await lấyCacheHtml(urlTrangSựKiện, "Meetup");
   const tree = fromHtml(html, { fragment: true });
   try {
     const elementChứaSựKiện = select("#__NEXT_DATA__", tree)!;
