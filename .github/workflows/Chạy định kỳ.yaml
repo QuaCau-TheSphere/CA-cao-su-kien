@@ -3,7 +3,9 @@ on:
   # push:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * 0"
+    # - cron: "0 0 * * 0" # Mỗi tuần
+    - cron: "0 0 * * *" # Mỗi nửa đêm
+
 jobs:
   cron:
     name: Chạy chương trình

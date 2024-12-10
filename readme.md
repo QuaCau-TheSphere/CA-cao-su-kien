@@ -10,6 +10,44 @@
 
 Việc cào trên web là theo cache hôm nay. Việc đẩy lên google calendar là theo cache mới nhất
 
+- [ ] Tự động tạo lịch mới khi ghi thiết lập
+- [ ] 
+
+## Cách chương trình hoạt động
+Tạo lớp `SựKiện` với các trường sau:
+```ts
+class SựKiện{
+  tiêuĐề: string;
+  môTả: string;
+  địaĐiểm: string;
+  lúcBắtĐầu: Temporal.Instant;
+  lúcKếtThúc: Temporal.Instant;
+  ảnh?: Url | Url[];
+  nguồnLấy: Url;
+  tênLịch: TênLịch;
+}
+```
+Khi đẩy lên Google Calendar thì đổi sang cấu trúc
+```ts
+{
+  summary: tiêuĐề,
+  description: môTả,
+  location: địaĐiểm,
+  source: {
+    title: tiêuĐề,
+    url: nguồnLấy,
+  },
+  start: {
+    dateTime: lúcBắtĐầu.toString({ smallestUnit: "second" }),
+    timeZone: "Asia/Ho_Chi_Minh",
+  },
+  end: {
+    dateTime: lúcKếtThúc.toString({ smallestUnit: "second" }),
+    timeZone: "Asia/Ho_Chi_Minh",
+  },
+}
+```
+
 ## Thiết lập chạy tự động trên GitHub Action
 gpg --symmetric --cipher-algo AES256 credentials.json
 

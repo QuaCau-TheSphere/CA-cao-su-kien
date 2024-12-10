@@ -1,25 +1,25 @@
 Danh sách cào:
-  - Meetup:
-      Lịch: Test ganu
-      URL: https://www.meetup.com/find/?source=EVENTS&eventType=inPerson&sortField=DATETIME&location=vn--Ho%20Chi%20Minh%20City
-  - Săn sự kiện:
-      Lịch: Test ganu
-      URL: https://sansukien.com/danh-sach-su-kien
+    - Meetup:
+          Lịch: zMeetup
+          URL: https://www.meetup.com/find/?source=EVENTS&eventType=inPerson&sortField=DATETIME&location=vn--Ho%20Chi%20Minh%20City
+    - Săn sự kiện:
+          Lịch: Test ganu
+          URL: https://sansukien.com/danh-sach-su-kien
 
-  - Liquipedia:
-      Lịch: Test ganu
-      URL: https://tl.net/calendar/xml/calendar.xml
+    - Liquipedia:
+          Lịch: zLiquipedia
+          URL: https://tl.net/calendar/xml/calendar.xml
 
-  - Công giáo:
-      Lịch: Test ganu
-      URL: https://www.tonggiaophanhanoi.org/thang-muoi-hai-2024/
+    - Công giáo:
+          Lịch: zCông giáo
+          URL: https://www.tonggiaophanhanoi.org/thang-muoi-hai-2024/
 
-  - Ticketbox:
-      Lịch: Test ganu
-      URL: https://ticketbox.vn/events/ho-chi-minh
+    - Ticketbox:
+          Lịch: zTicketbox
+          URL: https://ticketbox.vn/events/ho-chi-minh
 
-  - Esportapi:
-      Lịch: Test ganu
-      URL: https://ticketbox.vn/events/ha-noi
+    - Esportapi:
+          Lịch: zEsportapi
+          URL: https://ticketbox.vn/events/ha-noi
 
 Lịch mặc định: Test ganu
