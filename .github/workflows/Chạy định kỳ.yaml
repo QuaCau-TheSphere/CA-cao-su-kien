@@ -1,12 +1,12 @@
 name: Chạy định kỳ
 on: 
-  push:
+  # push:
   workflow_dispatch:
   schedule:
     - cron: "0 0 * * 0"
 jobs:
   cron:
-    name: deno task start
+    name: Chạy chương trình
     runs-on: ubuntu-latest
     steps:
       - name: Clone repo
@@ -26,5 +26,13 @@ jobs:
           gpg --batch --yes --decrypt --passphrase="$GOOGLE_API_PASSWORD" --output token.json token.json.gpg
           cd ../..
       
-      - name: Chạy chương trình
+      - name: 
         run: deno task start
+
+      - name: git
+        run: |
+          git config --global user.email "ganuongphap@gmail.com"
+          git config --global user.name "ooker"
+          git add -A 
+          git commit -m "Lưu cache"
+          git push
