@@ -60,10 +60,9 @@ export class SựKiện {
 export async function lấySựKiện() {
   const cacheSựKiệnHômNay = resolve(ĐƯỜNG_DẪN_CACHE, `${hômNay}.json`);
   try {
-    log.info("Dùng cache sự kiện");
     return JSON.parse(await Deno.readTextFile(cacheSựKiệnHômNay)) as SựKiện[];
   } catch (error) {
-    log.info("Không có cache, cào mới");
+    log.info("Hôm nay chưa tạo cache sự kiện nào. Cào mới");
     const ds = await tạoDsSựKiện();
     await Deno.writeTextFile(cacheSựKiệnHômNay, JSON.stringify(ds, null, 2));
     return ds;

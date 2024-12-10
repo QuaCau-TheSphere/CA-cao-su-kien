@@ -1,6 +1,6 @@
 name: Chạy định kỳ
 on: 
-  # push:
+  push:
   workflow_dispatch:
   schedule:
     - cron: "0 0 * * 0"
@@ -16,5 +16,15 @@ jobs:
         uses: denoland/setup-deno@v2
         with:
           deno-version: vx.x.x
-
-      - run: deno task start
+          
+      - name: Giải mã credentials
+        env:
+          GOOGLE_API_PASSWORD: ${{ secrets.GOOGLE_API_PASSWORD }}
+        run: |
+          cd Code\ hỗ\ trợ/Google\ Calendar/
+          gpg --batch --yes --decrypt --passphrase="$GOOGLE_API_PASSWORD" --output credentials.json credentials.json.gpg
+          gpg --batch --yes --decrypt --passphrase="$GOOGLE_API_PASSWORD" --output token.json token.json.gpg
+          cd ../..
+      
+      - name: Chạy chương trình
+        run: deno task start

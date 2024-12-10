@@ -26,7 +26,6 @@ async function lưuTokenTruyCập(credentials: Credentials) {
 
 /**
  * Việc kiểm tra xem người dùng được phép truy cập dữ liệu ở mức độ nào được gọi là cấp phép (authorization). Nó khác với việc xác thực (authentication) là kiểm tra danh tính của người đang truy cập
- * Nếu có token nghĩa là đã
  */
 async function cấpPhépTruyCập() {
   try {
