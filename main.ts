@@ -1,9 +1,10 @@
 import { lấyApiCủaCalendar } from "./Code hỗ trợ/Google Calendar/Xác thực Google API.ts";
-import { nhậpSựKiện, xoáSựKiệnTươngLai } from "./Code hỗ trợ/Google Calendar/Google Calendar.ts";
-import { lấySựKiện } from "./Code hỗ trợ/Lấy sự kiện mới.ts";
+import { nhậpSựKiện } from "./Code hỗ trợ/Google Calendar/Nhập sự kiện lên Google Calendar.ts";
+import { lấyLịchSựKiện } from "./Code hỗ trợ/Lấy sự kiện mới.ts";
+import { xoáSựKiệnTươngLai } from "./Code hỗ trợ/Google Calendar/Hàm hỗ trợ Google Calendar.ts";
 
 export const calendarApi = await lấyApiCủaCalendar();
 
-await xoáSựKiệnTươngLai("zMeetup");
-const dsSựKiện = await lấySựKiện();
-await nhậpSựKiện(dsSựKiện);
+// await xoáSựKiệnTươngLai("zMeetup");
+const lịchSựKiện = await lấyLịchSựKiện();
+await nhậpSựKiện(lịchSựKiện);

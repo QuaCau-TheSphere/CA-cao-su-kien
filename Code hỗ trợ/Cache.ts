@@ -3,7 +3,7 @@ import * as log from "@std/log";
 import { resolve } from "@std/path/resolve";
 import { slugify } from "@std/text/unstable-slugify";
 import { hômNay, TênWebsite, Url } from "./Hàm hỗ trợ.ts";
-import { SựKiện } from "./Lấy sự kiện mới.ts";
+import { LịchSựKiện, SựKiện } from "./Lấy sự kiện mới.ts";
 import { thiếtLập } from "./Hàm hỗ trợ.ts";
 
 export const ĐƯỜNG_DẪN_CACHE = "Cache";
@@ -22,14 +22,14 @@ export async function lấyCacheHtml(url: Url, tênWebsite: TênWebsite) {
   switch (làUrlTrongThiếtLập(tênWebsite, url)) {
     case true:
       tênCache = resolve(thưMụcCache, `${tênWebsite}.html`);
-      đọcCache = `Đọc từ cache của ${tênWebsite}`;
+      đọcCache = `Đọc từ cache HTML của ${tênWebsite}`;
       tạoCache = `Cào ${tênWebsite}`;
       break;
 
     default: {
       const pathname = slugify(new URL(url).pathname);
       tênCache = resolve(thưMụcCache, `${pathname}.html`);
-      đọcCache = `Đọc cache của ${pathname}`;
+      đọcCache = `Đọc cache HTML của ${pathname}`;
       tạoCache = `Cào ${url}`;
       break;
     }
@@ -49,16 +49,19 @@ export async function lấyCacheHtml(url: Url, tênWebsite: TênWebsite) {
   return html;
 }
 
-/**
- * Có tác dụng để xem có đẩy lên Google Calendar, chứ vẫn cào bình thường
- */
-export async function lấyCacheSựKiệnMớiNhất() {
-  const tênCache = await lấyTênCacheMớiNhất();
-  if (!tênCache) return [];
-  return JSON.parse(await Deno.readTextFile(resolve(ĐƯỜNG_DẪN_CACHE, tênCache))) as SựKiện[];
-}
-
 async function lấyTênCacheMớiNhất() {
   const dsCacheSựKiện = (await Array.fromAsync(Deno.readDir(ĐƯỜNG_DẪN_CACHE))).filter((i) => i.isFile);
   return dsCacheSựKiện.at(-1)?.name;
 }
+// /**
+//  * Có tác dụng để xem có đẩy lên Google Calendar, chứ vẫn cào bình thường
+//  */
+// export async function đọcCacheSựKiệnMớiNhất() {
+//   const tênCache = await lấyTênCacheMớiNhất();
+//   if (tênCache) {
+//     log.info(`Tìm thấy cache ${tênCache}. Kiểm tra xem sự kiện đã được nhập lên chưa bằng cache chứ không kiểm tra trực tiếp trên Google Calendar`);
+//     return JSON.parse(await Deno.readTextFile(resolve(ĐƯỜNG_DẪN_CACHE, tênCache))) as LịchSựKiện;
+//   }
+//   log.info("Không tìm thấy cache sự kiện của lần chạy trước đây. Kiểm tra sự kiện đã được nhập lên Google Calendar bằng cách trực tiếp gọi API");
+//   return undefined;
+// }

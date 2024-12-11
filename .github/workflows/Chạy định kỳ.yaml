@@ -30,11 +30,3 @@ jobs:
       
       - name: 
         run: deno task start
-
-      - name: git
-        run: |
-          git config --global user.email "ganuongphap@gmail.com"
-          git config --global user.name "ooker"
-          git add -A 
-          git commit -m "Lưu cache"
-          git push

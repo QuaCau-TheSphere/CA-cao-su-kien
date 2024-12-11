@@ -217,7 +217,7 @@ async function lấySựKiệnThô(urlTrangSựKiện: Url) {
   }
 }
 
-export async function càoMeetup(source: Url, tênLịch: TênLịch): Promise<SựKiện[]> {
+export async function càoMeetup(source: Url): Promise<SựKiện[]> {
   log.info("Cào Meetup");
   const dsUrl = await lấyDsUrl(source);
   const dsSựKiện: SựKiện[] = [];
@@ -237,7 +237,6 @@ export async function càoMeetup(source: Url, tênLịch: TênLịch): Promise<S
       lúcBắtĐầu: Temporal.Instant.from(dateTime),
       lúcKếtThúc: Temporal.Instant.from(endTime),
       ảnh: featuredEventPhoto?.baseUrl,
-      tênLịch: tênLịch,
     });
     dsSựKiện.push(event);
   }
