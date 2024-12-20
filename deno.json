@@ -16,12 +16,14 @@
   "compilerOptions": {
   },
   "imports": {
+    "@hugoalh/symmetric-crypto": "jsr:@hugoalh/symmetric-crypto@^4.1.0",
     "@std/fs": "jsr:@std/fs",
-    "@std/dotenv": "jsr:@std/dotenv@^0.225.2",
-    "@std/log": "jsr:@std/log@^0.224.11",
-    "@std/path": "jsr:@std/path@^1.0.8",
-    "@std/text": "jsr:@std/text@^1.0.8",
-    "@std/yaml": "jsr:@std/yaml@^1.0.5",
+    "@std/cli": "jsr:@std/cli",
+    "@std/log": "jsr:@std/log",
+    "@std/path": "jsr:@std/path",
+    "@std/text": "jsr:@std/text",
+    "@std/yaml": "jsr:@std/yaml",
+    "@std/dotenv/load": "jsr:@std/dotenv/load",
 
     "hast-util-from-html": "npm:hast-util-from-html@^2.0.3",
     "hast-util-select": "npm:hast-util-select@^6.0.3",
@@ -29,7 +31,8 @@
 
     "googleapis": "npm:googleapis@^144.0.0",
     "@googleapis/calendar": "npm:@googleapis/calendar@^9.7.9",
-    "@google-cloud/local-auth": "npm:@google-cloud/local-auth@^3.0.1"
+    "@google-cloud/local-auth": "npm:@google-cloud/local-auth@^3.0.1",
+    "openpgp": "npm:openpgp@^6.0.1"
   },
   "nodeModulesDir": "none"
 }

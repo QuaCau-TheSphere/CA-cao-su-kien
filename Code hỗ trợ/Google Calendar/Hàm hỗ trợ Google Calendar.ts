@@ -1,26 +1,30 @@
-import { calendarApi } from "../../main.ts";
 import * as log from "@std/log";
-import { bâyGiờ, thiếtLập, TênLịch } from "../Hàm hỗ trợ.ts";
 import { calendar_v3 } from "googleapis";
 import { SựKiện } from "../Lấy sự kiện mới.ts";
+import { bâyGiờ, thiếtLập, TênLịch } from "../Hàm hỗ trợ.ts";
+import { calendarApi } from "../../main.ts";
 
 export async function lấyTênLịch(idLịch: string) {
+  if (!calendarApi) return;
   return (await calendarApi.calendarList.get({ calendarId: idLịch })).data.summary as TênLịch;
 }
 
 export async function lấyIdLịch(tênLịch: TênLịch) {
-  async function lấyId(tên: TênLịch) {
-    const items = (await calendarApi.calendarList.list()).data.items as calendar_v3.Schema$CalendarListEntry[];
-    return items?.find((lịch) => lịch.summary === tên)?.id as string | undefined;
-  }
-
   const id = await lấyId(tênLịch);
   if (id) return id;
 
-  log.warn(`Lịch ${tênLịch} không tồn tại. Dùng lịch mặc định`);
   const tênLịchMặcĐịnh = thiếtLập["Lịch mặc định"];
+  log.warn(`Lịch ${tênLịch} không tồn tại. Dùng lịch mặc định (${tênLịchMặcĐịnh})`);
   const idMặcĐịnh = await lấyId(tênLịchMặcĐịnh);
   return idMặcĐịnh;
+
+  async function lấyId(tên: TênLịch) {
+    if (!calendarApi) return;
+    const calendarList = calendarApi.calendarList;
+    // console.log("🚀 ~ lấyId ~ calendarList:", calendarList);
+    const items = (await calendarList.list()).data.items as calendar_v3.Schema$CalendarListEntry[];
+    return items?.find((lịch) => lịch.summary === tên)?.id as string | undefined;
+  }
 }
 
 /**
@@ -61,6 +65,7 @@ export function tạoSựKiệnTừGCal({ summary, description, location, source
 }
 
 export async function liệtKêSựKiện(tênLịch: string, sốLượng = 10, logOut = false): Promise<calendar_v3.Schema$Events> {
+  if (!calendarApi) return;
   const idLịch = await lấyIdLịch(tênLịch);
   if (!idLịch) return [];
 
@@ -89,6 +94,7 @@ export async function liệtKêSựKiện(tênLịch: string, sốLượng = 10,
 }
 
 export async function xoáSựKiệnTươngLai(tênLịch: string) {
+  if (!calendarApi) return;
   log.info("Xoá sự kiện trong tương lai");
   const idLịch = await lấyIdLịch(tênLịch);
   if (!idLịch) return;

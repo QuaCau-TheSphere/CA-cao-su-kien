@@ -1,6 +1,6 @@
-name: Chạy định kỳ
+name: Cào sự kiện định kỳ
 on: 
-  # push:
+  push:
   workflow_dispatch:
   schedule:
     # - cron: "0 0 * * 0" # Mỗi tuần
@@ -19,14 +19,16 @@ jobs:
         with:
           deno-version: vx.x.x
           
-      - name: Giải mã credentials
-        env:
-          GOOGLE_API_PASSWORD: ${{ secrets.GOOGLE_API_PASSWORD }}
-        run: |
-          cd Code\ hỗ\ trợ/Google\ Calendar/
-          gpg --batch --yes --decrypt --passphrase="$GOOGLE_API_PASSWORD" --output credentials.json credentials.json.gpg
-          gpg --batch --yes --decrypt --passphrase="$GOOGLE_API_PASSWORD" --output token.json token.json.gpg
-          cd ../..
-      
+      # - name: Giải mã credentials
+      #   env:
+      #     GOOGLE_API_DECRYPT_PASSWORDWORD: ${{ secrets.GOOGLE_API_DECRYPT_PASSWORDWORD }}
+      #     run: |
+      #     cd Code\ hỗ\ trợ/Google\ Calendar/
+      #     gpg --batch --yes --decrypt --passphrase="$GOOGLE_API_DECRYPT_PASSWORDWORD" --output credentials.json credentials.json.gpg
+      #     gpg --batch --yes --decrypt --passphrase="$GOOGLE_API_DECRYPT_PASSWORDWORD" --output token.json token.json.gpg
+      #     cd ../..
+          
       - name: 
+        env:
+          DECRYPT_PASSWORD: ${{ secrets.DECRYPT_PASSWORD }}
         run: deno task start

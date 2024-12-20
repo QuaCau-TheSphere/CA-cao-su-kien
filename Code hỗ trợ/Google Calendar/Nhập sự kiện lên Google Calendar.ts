@@ -24,7 +24,7 @@ function sựKiệnĐãĐượcNhập(tênLịch: TênLịch, { môTả }: SựK
 export async function nhậpSựKiện(lịchSựKiện: LịchSựKiện) {
   const lịchĐãCó = await lấyLịchĐãCó();
   for (const [tênLịch, dsSựKiện] of Object.entries(lịchSựKiện)) {
-    log.info(`Tiếp nhận được ${dsSựKiện.length} sự kiện cho lịch ${tênLịch}. Bắt đầu nhập lên Google Calendar`);
+    log.info(`Bắt đầu nhập ${dsSựKiện.length} sự kiện lên lịch ${tênLịch} trên Google Calendar`);
     for (const sựKiện of dsSựKiện) {
       if (sựKiệnĐãĐượcNhập(tênLịch, sựKiện, lịchĐãCó)) {
         console.log(`Đã có sẵn: ${sựKiện.tiêuĐề}`);
